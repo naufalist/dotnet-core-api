@@ -1,0 +1,80 @@
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using StudentRestAPI.StudentData;
+using StudentRestAPI.Models;
+
+namespace StudentRestAPI.Controllers
+{
+    [ApiController]
+    public class StudentsController : ControllerBase
+    {
+        private readonly IStudentData _studentData;
+        public StudentsController(IStudentData studentData)
+        {
+            _studentData = studentData;
+        }
+
+        [HttpGet]
+        [Route("api/[controller]")]
+        public IActionResult GetStudents()
+        {
+            return Ok(_studentData.GetStudents());
+        }
+
+        [HttpGet]
+        [Route("api/[controller]/{studentId}")]
+        public IActionResult GetStudent(int studentId)
+        {
+            var student = _studentData.GetStudent(studentId);
+            if (student != null)
+            {
+                return Ok(student);
+            }
+            return NotFound($"Student with Id: {studentId} was not found.");
+        }
+
+        [HttpPost]
+        [Route("api/[controller]")]
+        public IActionResult AddStudent(Student student)
+        {
+            _studentData.AddStudent(student);
+            return Created(
+                HttpContext.Request.Scheme + "://" +
+                HttpContext.Request.Host + HttpContext.Request.Path + "/" +
+                student.Id, student
+            );
+        }
+
+        [HttpPatch]
+        [Route("api/[controller]/{studentId}")]
+        public IActionResult EditStudent(int studentId, Student student)
+        {
+            var existingStudent = _studentData.GetStudent(studentId);
+            if (existingStudent != null)
+            {
+                existingStudent =_studentData.EditStudent(studentId, student);
+                return Ok(existingStudent);
+            }
+
+            return NotFound($"Student with Id: {studentId} was not found.");
+        }
+
+        [HttpDelete]
+        [Route("api/[controller]/{studentId}")]
+        public IActionResult DeleteStudent(int studentId)
+        {
+            var student = _studentData.GetStudent(studentId);
+            if (student != null)
+            {
+                _studentData.DeleteStudent(student);
+                return Ok($"Student with Id: {studentId} deleted successfully.");
+            }
+
+            return NotFound($"Student with Id: {studentId} was not found.");
+        }
+    }
+}
