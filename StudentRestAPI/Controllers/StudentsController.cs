@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using StudentRestAPI.StudentData;
 using StudentRestAPI.Models;
+using StudentRestAPI.Dtos;
 
 namespace StudentRestAPI.Controllers
 {
@@ -39,8 +40,14 @@ namespace StudentRestAPI.Controllers
 
         [HttpPost]
         [Route("api/[controller]")]
-        public IActionResult AddStudent(Student student)
+        public IActionResult AddStudent(AddStudentDto addStudentDto)
         {
+            Student student = new()
+            {
+                FirstName = addStudentDto.FirstName,
+                LastName = addStudentDto.LastName,
+                IPK = addStudentDto.IPK
+            };
             _studentData.AddStudent(student);
             return Created(
                 HttpContext.Request.Scheme + "://" +
