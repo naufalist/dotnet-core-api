@@ -31,8 +31,11 @@ namespace StudentRestAPI
             /*
              * DbContext
              */
-            services.AddDbContextPool<StudentDbContext>(options => 
-                options.UseMySQL(Configuration.GetConnectionString("MySqlDb"))
+            //services.AddDbContextPool<StudentDbContext>(options => 
+            //    options.UseMySQL(Configuration.GetConnectionString("MySqlDb"))
+            //);
+            services.AddDbContextPool<StudentDbContext>(options =>
+                options.UseNpgsql(Configuration.GetConnectionString("PostgresDb"))
             );
 
             services.AddControllers();
