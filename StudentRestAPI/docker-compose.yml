@@ -1,0 +1,21 @@
+version: "3"
+
+services:
+  dev_postgres:
+    image: postgres:9.5
+    container_name: dev_postgres
+    restart: always
+    ports:
+      -   "5555:5432"
+    environment:
+      -   POSTGRES_USER=postgres
+      -   POSTGRES_PASSWORD=postgres
+
+  dev_mysql:
+    image: mysql:latest
+    container_name: dev_mysql
+    restart: always
+    ports:
+      -   "3333:3306"
+    environment:
+      -   MYSQL_ROOT_PASSWORD=root
