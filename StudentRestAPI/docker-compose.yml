@@ -10,6 +10,8 @@ services:
     environment:
       -   POSTGRES_USER=postgres
       -   POSTGRES_PASSWORD=postgres
+    volumes:
+      - dev_postgresdbdata:/var/lib/postgresql
 
   dev_mysql:
     image: mysql:latest
@@ -19,3 +21,9 @@ services:
       -   "3333:3306"
     environment:
       -   MYSQL_ROOT_PASSWORD=root
+    volumes:
+      - dev_mysqldbdata:/var/lib/mysql
+
+volumes:
+  dev_postgresdbdata:
+  dev_mysqldbdata:
