@@ -7,7 +7,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using StackExchange.Redis;
 using StudentRestAPI.Models;
+using StudentRestAPI.Redis;
 using StudentRestAPI.StudentData;
 using System;
 using System.Collections.Generic;
@@ -45,6 +47,14 @@ namespace StudentRestAPI
              */
             //services.AddSingleton<IStudentData, MockStudentData>();
             services.AddScoped<IStudentData, SqlStudentData>();
+
+            /*
+             * Redis
+             */
+            services.AddSingleton<IConnectionMultiplexer>(x =>
+                ConnectionMultiplexer.Connect(Configuration.GetValue<string>("RedisConnection")
+            ));
+            services.AddSingleton<IRedisCache, RedisCacheService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

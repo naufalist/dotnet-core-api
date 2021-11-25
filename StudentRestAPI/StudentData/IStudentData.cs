@@ -10,13 +10,15 @@ namespace StudentRestAPI.StudentData
     {
         List<Student> GetStudents();
 
-        Student GetStudent(int studentId);
+        Task<Student> GetStudent(int studentId, bool useRedis = true);
 
         Student AddStudent(Student student);
 
-        Student EditStudent(int studentId, Student student);
+        Task<Student> EditStudent(int studentId, Student student);
 
         void DeleteStudent(Student student);
+
+        bool CheckStudentIfExists(int studentId);
 
     }
 }

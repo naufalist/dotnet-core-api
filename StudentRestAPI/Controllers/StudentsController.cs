@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using StudentRestAPI.StudentData;
 using StudentRestAPI.Models;
 using StudentRestAPI.Dtos;
+using StudentRestAPI.Redis;
 
 namespace StudentRestAPI.Controllers
 {
@@ -14,9 +15,12 @@ namespace StudentRestAPI.Controllers
     public class StudentsController : ControllerBase
     {
         private readonly IStudentData _studentData;
-        public StudentsController(IStudentData studentData)
+        private readonly IRedisCache _redisCache;
+
+        public StudentsController(IStudentData studentData, IRedisCache redisCache)
         {
             _studentData = studentData;
+            _redisCache = redisCache;
         }
 
         [HttpGet]
@@ -28,9 +32,9 @@ namespace StudentRestAPI.Controllers
 
         [HttpGet]
         [Route("api/[controller]/{studentId}")]
-        public IActionResult GetStudent(int studentId)
+        public async Task<IActionResult> GetStudent(int studentId)
         {
-            var student = _studentData.GetStudent(studentId);
+            var student = await _studentData.GetStudent(studentId);
             if (student != null)
             {
                 return Ok(student);
@@ -58,13 +62,12 @@ namespace StudentRestAPI.Controllers
 
         [HttpPatch]
         [Route("api/[controller]/{studentId}")]
-        public IActionResult EditStudent(int studentId, Student student)
+        public async Task<IActionResult> EditStudent(int studentId, Student student)
         {
-            var existingStudent = _studentData.GetStudent(studentId);
-            if (existingStudent != null)
+            var existingStudent = _studentData.CheckStudentIfExists(studentId);
+            if (existingStudent != false)
             {
-                existingStudent =_studentData.EditStudent(studentId, student);
-                return Ok(existingStudent);
+                return Ok(await _studentData.EditStudent(studentId, student));
             }
 
             return NotFound($"Student with Id: {studentId} was not found.");
@@ -72,9 +75,9 @@ namespace StudentRestAPI.Controllers
 
         [HttpDelete]
         [Route("api/[controller]/{studentId}")]
-        public IActionResult DeleteStudent(int studentId)
+        public async Task<IActionResult> DeleteStudent(int studentId)
         {
-            var student = _studentData.GetStudent(studentId);
+            var student = await _studentData.GetStudent(studentId);
             if (student != null)
             {
                 _studentData.DeleteStudent(student);
