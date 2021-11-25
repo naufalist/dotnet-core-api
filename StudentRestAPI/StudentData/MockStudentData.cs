@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace StudentRestAPI.StudentData
 {
-    public class MockStudentData : IStudentData
+    public class MockStudentData
     {
 
         private readonly List<Student> students = new()
