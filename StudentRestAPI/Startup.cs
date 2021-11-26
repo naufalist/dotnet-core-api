@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 using StudentRestAPI.Models;
 using StudentRestAPI.Redis;
+using StudentRestAPI.Seeders;
 using StudentRestAPI.StudentData;
 using System;
 using System.Collections.Generic;
@@ -75,6 +76,8 @@ namespace StudentRestAPI
             {
                 endpoints.MapControllers();
             });
+
+            StudentSeeder.Seed(app);
         }
     }
 }
