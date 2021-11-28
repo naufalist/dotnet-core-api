@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 using StudentRestAPI.Models;
 using StudentRestAPI.Redis;
-using StudentRestAPI.Seeders;
+using StudentRestAPI.Services;
 using StudentRestAPI.StudentData;
 using System;
 using System.Collections.Generic;
@@ -37,7 +37,7 @@ namespace StudentRestAPI
             //services.AddDbContextPool<StudentDbContext>(options => 
             //    options.UseMySQL(Configuration.GetConnectionString("MySqlDb"))
             //);
-            services.AddDbContextPool<StudentDbContext>(options =>
+            services.AddDbContextPool<AppDbContext>(options =>
                 options.UseNpgsql(Configuration.GetConnectionString("PostgresDb"))
             );
 
@@ -47,7 +47,10 @@ namespace StudentRestAPI
              * MockStudentData || SqlStudentData
              */
             //services.AddSingleton<IStudentData, MockStudentData>();
-            services.AddScoped<IStudentData, SqlStudentData>();
+            //services.AddScoped<IStudentData, SqlStudentData>();
+            services.AddTransient<StudentService>();
+            services.AddTransient<ProjectService>();
+            services.AddTransient<SupervisorService>();
 
             /*
              * Redis
@@ -76,8 +79,6 @@ namespace StudentRestAPI
             {
                 endpoints.MapControllers();
             });
-
-            StudentSeeder.Seed(app);
         }
     }
 }

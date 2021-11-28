@@ -5,18 +5,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace StudentRestAPI.StudentData
+namespace StudentRestAPI.Services
 {
-    public class SqlStudentData : IStudentData
+    public class StudentService
     {
         private readonly AppDbContext _dbContext;
         private readonly IRedisCache _redisCache;
 
-        public SqlStudentData(AppDbContext studentDbContext, IRedisCache redisCache)
+        public StudentService(AppDbContext AppDbContext, IRedisCache redisCache)
         {
-            _dbContext = studentDbContext;
+            _dbContext = AppDbContext;
             _redisCache = redisCache;
         }
+
         public List<Student> GetStudents()
         {
             return _dbContext.Student.ToList();
@@ -61,6 +62,7 @@ namespace StudentRestAPI.StudentData
             existingStudent.FirstName = student.FirstName;
             existingStudent.LastName = student.LastName;
             existingStudent.IPK = student.IPK;
+            existingStudent.SupervisorId = student.SupervisorId;
             _dbContext.Student.Update(existingStudent);
             _dbContext.SaveChanges();
             _redisCache.Update($"student.id-{studentId}", existingStudent, new TimeSpan(0, 5, 0));
@@ -83,39 +85,40 @@ namespace StudentRestAPI.StudentData
         {
             var _student = new Student()
             {
-                FirstName = "Naufal",
-                LastName = "Wafi",
-                IPK = 3.80M,
+                FirstName = student.FirstName,
+                LastName = student.LastName,
+                IPK = student.IPK,
                 SupervisorId = student.SupervisorId
             };
 
             _dbContext.Student.Add(_student);
             _dbContext.SaveChanges();
 
-            foreach (var id in student.ProjectIds)
+            foreach (var projectId in student.ProjectIds)
             {
                 var _student_project = new Student_Project()
                 {
                     StudentId = _student.Id,
-                    ProjectId = id
+                    ProjectId = projectId
                 };
                 _dbContext.Student_Project.Add(_student_project);
                 _dbContext.SaveChanges();
             }
         }
 
-        public StudentWithProjectsOutput GetStudentById(int studentId)
+        public StudentWithProjectsOutput GetStudentWithProjects(int studentId)
         {
             var _studentWithProjects = _dbContext.Student
-                .Where(n => n.Id == studentId)
+                .Where(s => s.Id == studentId)
                 .Select(student => new StudentWithProjectsOutput()
-                {
-                    FirstName = student.FirstName,
-                    LastName = student.LastName,
-                    IPK = student.IPK,
-                    //SupervisorName = student.Supervisor.Name,
-                    ProjectNames = student.Student_Projects.Select(n => n.Project.Title).ToList()
-                }).FirstOrDefault();
+                    {
+                        FirstName = student.FirstName,
+                        LastName = student.LastName,
+                        IPK = student.IPK,
+                        //SupervisorName = student.Supervisor.Name,
+                        ProjectNames = student.Student_Projects.Select(sp => sp.Project.Title).ToList()
+                    }
+                ).FirstOrDefault();
 
             return _studentWithProjects;
         }

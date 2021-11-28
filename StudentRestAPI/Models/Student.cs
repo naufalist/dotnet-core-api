@@ -21,5 +21,10 @@ namespace StudentRestAPI.Models
 
         [Required]
         public decimal IPK { get; set; }
+
+        public int? SupervisorId { get; set; }
+        public Supervisor Supervisor { get; set; }
+
+        public List<Student_Project> Student_Projects { get; set; }
     }
 }

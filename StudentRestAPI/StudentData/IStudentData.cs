@@ -20,5 +20,6 @@ namespace StudentRestAPI.StudentData
 
         bool CheckStudentIfExists(int studentId);
 
+        void AddStudentWithProjects(StudentOutput student);
     }
 }
