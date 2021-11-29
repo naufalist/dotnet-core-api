@@ -1,18 +1,15 @@
 version: '3.4'
 
 services:
-  dev_netcore:
-    image: studentrestapi:1.0
+  studentrestapi:
+    image: ${DOCKER_REGISTRY-}studentrestapi
     container_name: dev_netcore
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+:443;http://+:80
     ports:
       - "5000:80"
       - "5001:443"
-    volumes:
-      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
-      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+    build:
+      context: .
+      dockerfile: StudentRestAPI/Dockerfile
 
   dev_postgres:
     image: postgres:9.5
