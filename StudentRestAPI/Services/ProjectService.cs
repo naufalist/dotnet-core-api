@@ -63,5 +63,16 @@ namespace StudentRestAPI.Services
         {
             return _dbContext.Project.Any(project => project.Id == projectId);
         }
+
+        public ProjectWithStudentsOutput GetProjectWithStudents(int projectId)
+        {
+            var _project = _dbContext.Project.Where(n => n.Id == projectId).Select(n => new ProjectWithStudentsOutput()
+            {
+                Title = n.Title,
+                StudentNames = n.Student_Projects.Select(n => n.Student.FirstName).ToList()
+            }).FirstOrDefault();
+
+            return _project;
+        }
     }
 }

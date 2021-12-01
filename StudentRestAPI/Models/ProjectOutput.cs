@@ -9,4 +9,10 @@ namespace StudentRestAPI.Models
     {
         public string Title { get; set; }
     }
+
+    public class ProjectWithStudentsOutput
+    {
+        public string Title { get; set; }
+        public List<string> StudentNames { get; set; }
+    }
 }

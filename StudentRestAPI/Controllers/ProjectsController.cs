@@ -85,5 +85,11 @@ namespace StudentRestAPI.Controllers
             return NotFound($"Project with Id: {projectId} was not found.");
         }
 
+        [HttpGet("{projectId}/with-students")]
+        public IActionResult GetProjectWithStudents([FromRoute] int projectId)
+        {
+            var response = _projectService.GetProjectWithStudents(projectId);
+            return Ok(response);
+        }
     }
 }
