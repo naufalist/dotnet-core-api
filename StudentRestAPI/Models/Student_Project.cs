@@ -8,7 +8,6 @@ namespace StudentRestAPI.Models
 {
     public class Student_Project
     {
-        [Key]
         public int Id { get; set; }
 
         public int StudentId { get; set; }
