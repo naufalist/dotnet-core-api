@@ -52,7 +52,7 @@ namespace StudentRestAPI.Models
             modelBuilder.Entity<Student_Project>()
                 .HasOne(s => s.Project)
                 .WithMany(sp => sp.Student_Projects)
-                .HasForeignKey(si => si.StudentId);
+                .HasForeignKey(si => si.ProjectId);
 
             modelBuilder.UseSerialColumns(); // important for postgres!!
         }
