@@ -11,27 +11,27 @@ services:
       context: .
       dockerfile: StudentRestAPI/Dockerfile
 
-  dev_postgres:
-    image: postgres:9.5
-    container_name: dev_postgres
-    restart: always
-    ports:
-      - "5555:5432"
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=students
-    volumes:
-      - dev_postgresdbdata:/var/lib/postgresql/data
+#  dev_postgres:
+#    image: postgres:9.5
+#    container_name: dev_postgres
+#    restart: always
+#    ports:
+#      - "5555:5432"
+#    environment:
+#      - POSTGRES_USER=postgres
+#      - POSTGRES_PASSWORD=postgres
+#      - POSTGRES_DB=students
+#    volumes:
+#      - dev_postgresdbdata:/var/lib/postgresql/data
 
-  dev_redis:
-    image: redis:latest
-    container_name: dev_redis
-    restart: always
-    ports:
-      - "6666:6379"
+#  dev_redis:
+#    image: redis:latest
+#    container_name: dev_redis
+#    restart: always
+#    ports:
+#      - "6666:6379"
 
-volumes:
-  dev_postgresdbdata:
-    external: true
-    name: dev_postgresdbdata
+#volumes:
+#  dev_postgresdbdata:
+#    external: true
+#    name: dev_postgresdbdata
