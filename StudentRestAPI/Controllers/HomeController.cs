@@ -12,6 +12,7 @@ namespace StudentRestAPI.Controllers
     [ApiController]
     public class HomeController : ControllerBase
     {
+        [HttpGet]
         public IActionResult Root()
         {
             object message = new
