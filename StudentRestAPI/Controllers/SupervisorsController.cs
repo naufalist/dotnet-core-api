@@ -25,6 +25,12 @@ namespace StudentRestAPI.Controllers
             return Ok(_supervisorService.GetSupervisors());
         }
 
+        [HttpGet("with-delete")]
+        public IActionResult GetSupervisorsWithDelete()
+        {
+            return Ok(_supervisorService.GetSupervisors(true));
+        }
+
         [HttpGet("{supervisorId}")]
         public IActionResult GetSupervisor([FromRoute] int supervisorId)
         {
@@ -78,8 +84,14 @@ namespace StudentRestAPI.Controllers
             var supervisor = _supervisorService.GetSupervisor(supervisorId);
             if (supervisor != null)
             {
-                _supervisorService.DeleteSupervisor(supervisor);
-                return Ok($"Supervisor with Id: {supervisorId} deleted successfully.");
+                bool supervisorDeleted =_supervisorService.DeleteSupervisor(supervisor);
+                if (supervisorDeleted)
+                {
+                    return Ok($"Supervisor with Id: {supervisorId} deleted successfully.");
+                } else
+                {
+                    return Ok($"Supervisor cannot be deleted. Probably it has relationship.");
+                }
             }
 
             return NotFound($"Supervisor with Id: {supervisorId} was not found.");
