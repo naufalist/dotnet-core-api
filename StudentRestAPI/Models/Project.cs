@@ -10,6 +10,8 @@ namespace StudentRestAPI.Models
         public int Id { get; set; }
         public string Title { get; set; }
 
-        public List<Student_Project> Student_Projects { get; set; }
+        public List<Student> Students { get; set; }
+
+        public List<StudentProject> Student_Projects { get; set; }
     }
 }

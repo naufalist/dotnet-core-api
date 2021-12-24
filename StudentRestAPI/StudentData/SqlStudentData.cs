@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace StudentRestAPI.StudentData
 {
-    public class SqlStudentData : IStudentData
+    public class SqlStudentData
     {
         private readonly AppDbContext _dbContext;
         private readonly IRedisCache _redisCache;
@@ -79,14 +79,14 @@ namespace StudentRestAPI.StudentData
             return _dbContext.Student.Any(student => student.Id == studentId);
         }
 
-        public void AddStudentWithProjects(StudentOutput student)
+        public void AddStudentWithProjects(StudentWithProjectInput student)
         {
             var _student = new Student()
             {
                 FirstName = "Naufal",
                 LastName = "Wafi",
                 IPK = 3.80M,
-                SupervisorId = student.SupervisorId
+                //SupervisorId = student.SupervisorId
             };
 
             _dbContext.Student.Add(_student);
@@ -94,12 +94,12 @@ namespace StudentRestAPI.StudentData
 
             foreach (var id in student.ProjectIds)
             {
-                var _student_project = new Student_Project()
+                var _student_project = new StudentProject()
                 {
                     StudentId = _student.Id,
                     ProjectId = id
                 };
-                _dbContext.Student_Project.Add(_student_project);
+                //_dbContext.Student_Project.Add(_student_project);
                 _dbContext.SaveChanges();
             }
         }
@@ -114,7 +114,7 @@ namespace StudentRestAPI.StudentData
                     LastName = student.LastName,
                     IPK = student.IPK,
                     //SupervisorName = student.Supervisor.Name,
-                    ProjectNames = student.Student_Projects.Select(n => n.Project.Title).ToList()
+                    //ProjectNames = student.Student_Projects.Select(n => n.Project.Title).ToList()
                 }).FirstOrDefault();
 
             return _studentWithProjects;

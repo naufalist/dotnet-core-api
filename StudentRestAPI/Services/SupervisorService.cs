@@ -25,8 +25,12 @@ namespace StudentRestAPI.Services
             _dbContext.SaveChanges();
         }
 
-        public List<Supervisor> GetSupervisors()
+        public List<Supervisor> GetSupervisors(bool withDeletedData = false)
         {
+            if (!withDeletedData)
+            {
+                return _dbContext.Supervisor.Where(p => p.DeletedAt == null).ToList();
+            }
             return _dbContext.Supervisor.ToList();
         }
 
@@ -63,10 +67,21 @@ namespace StudentRestAPI.Services
             return GetSupervisor(supervisorId);
         }
 
-        public void DeleteSupervisor(Supervisor supervisor)
+        public bool DeleteSupervisor(Supervisor supervisor)
         {
-            _dbContext.Supervisor.Remove(supervisor);
-            _dbContext.SaveChanges();
+            //_dbContext.Supervisor.Remove(supervisor);
+            //_dbContext.SaveChanges();
+
+            try
+            {
+                _dbContext.Supervisor.Remove(supervisor);
+                _dbContext.SaveChanges();
+                return true;
+            }
+            catch // DataException ?
+            {
+                return false;
+            }
         }
 
         public void DeleteSupervisorById(int id)
@@ -82,6 +97,11 @@ namespace StudentRestAPI.Services
         public bool CheckSupervisorIfExists(int supervisorId)
         {
             return _dbContext.Supervisor.Any(supervisor => supervisor.Id == supervisorId);
+        }
+
+        public string GetNameById(int supervisorId)
+        {
+            return _dbContext.Supervisor.Where(supervisor => supervisor.Id == supervisorId).Select(supervisor => supervisor.Name).FirstOrDefault();
         }
     }
 }

@@ -6,27 +6,25 @@ using System.Threading.Tasks;
 
 namespace StudentRestAPI.Models
 {
-    public class Student
+    public class StudentInput
     {
-        [Key]
-        public int Id { get; set; }
-
-        [Required]
-        [MaxLength(30, ErrorMessage ="First name can only be filled with 30 characters.")]
+        [MaxLength(30, ErrorMessage = "First name can only be filled with 30 characters.")]
         public string FirstName { get; set; }
 
-        [Required]
         [MaxLength(30, ErrorMessage = "Last name can only be filled with 30 characters.")]
         public string LastName { get; set; }
 
-        [Required]
         public decimal IPK { get; set; }
 
+        // Id of Supervisor
         public int? SupervisorId { get; set; }
-        public Supervisor Supervisor { get; set; }
 
-        public List<Project> Projects { get; set; }
+        // List<int> of Project Id(s)
+        public List<int?> ProjectIds { get; set; }
+    }
 
-        //public List<StudentProject> Student_Projects { get; set; }
+    public class StudentProjectIdsInput
+    {
+        public List<int> ProjectIds { get; set; }
     }
 }

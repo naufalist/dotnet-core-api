@@ -5,13 +5,8 @@ using System.Threading.Tasks;
 
 namespace StudentRestAPI.Models
 {
-    public class Supervisor
+    public class SupervisorInput
     {
         public int Id { get; set; }
-        public string Name { get; set; }
-        public DateTime? DeletedAt { get; set; }
-
-        public List<Student> Students { get; set; }
-
     }
 }
