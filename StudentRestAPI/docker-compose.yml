@@ -34,7 +34,134 @@ services:
     ports:
       - "6666:6379"
 
+  #dev_elasticsearch:
+  #  image: docker.elastic.co/elasticsearch/elasticsearch:7.14.2
+  #  container_name: dev_elasticsearch
+  #  restart: always
+  #  ports:
+  #    - 9200:9200
+  #  environment:
+  #    - node.name=es-node
+  #    - cluster.name=es-docker-cluster
+  #    - discovery.type=single-node
+  #    - bootstrap.memory_lock=true
+  #    - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+  #    # - xpack.security.enabled=false
+  #    # - xpack.watcher.enabled=false
+  #  volumes:
+  #    - dev_elasticsearchdata:/usr/share/elasticsearch/data
+  #  ulimits:
+  #    memlock:
+  #      soft: -1
+  #      hard: -1
+  #  #networks:
+  #  #  - elastic
+
+  es01:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.14.2
+    container_name: es01
+    restart: always
+    environment:
+      - node.name=es01
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=es02,es03
+      - cluster.initial_master_nodes=es01,es02,es03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - http.port=9201
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - es01_data:/usr/share/elasticsearch/data
+    ports:
+      - 9201:9201
+    networks:
+      - elastic
+
+  es02:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.14.2
+    container_name: es02
+    restart: always
+    environment:
+      - node.name=es02
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=es01,es03
+      - cluster.initial_master_nodes=es01,es02,es03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - http.port=9202
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - es02_data:/usr/share/elasticsearch/data
+    ports:
+      - 9202:9202
+    networks:
+      - elastic
+
+  es03:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.14.2
+    container_name: es03
+    restart: always
+    environment:
+      - node.name=es03
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=es01,es02
+      - cluster.initial_master_nodes=es01,es02,es03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - http.port=9203
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - es03_data:/usr/share/elasticsearch/data
+    ports:
+      - 9203:9203
+    networks:
+      - elastic
+
+  dev_kibana:
+    image: docker.elastic.co/kibana/kibana:7.14.2
+    container_name: dev_kibana
+    restart: always
+    ports:
+      - 5601:5601
+    environment:
+      - ELASTICSEARCH_HOSTS=["http://es01:9201","http://es02:9202","http://es03:9203"]
+    volumes:
+      - dev_kibanadata:/usr/share/kibana/data
+    depends_on:
+      #- dev_elasticsearch
+      - es01
+      - es02
+      - es03
+    networks:
+      - elastic
+
 volumes:
   dev_postgresdbdata:
     external: true
     name: dev_postgresdbdata
+  dev_elasticsearchdata:
+    driver: local
+  dev_kibanadata:
+    driver: local
+  es01_data:
+    #external: true
+    name: es01_data
+  es02_data:
+    #external: true
+    name: es02_data
+  es03_data:
+    #external: true
+    name: es03_data
+
+networks:
+  elastic:
+    driver: bridge

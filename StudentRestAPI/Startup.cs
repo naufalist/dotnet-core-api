@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Nest;
 using StackExchange.Redis;
 using StudentRestAPI.Models;
 using StudentRestAPI.Redis;
@@ -41,7 +42,10 @@ namespace StudentRestAPI
                 options.UseNpgsql(Configuration.GetConnectionString("PostgresDb"))
             );
 
-            services.AddControllers();
+            //services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson(options =>
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+            );
 
             /*
              * MockStudentData || SqlStudentData
@@ -59,6 +63,12 @@ namespace StudentRestAPI
                 ConnectionMultiplexer.Connect(Configuration.GetValue<string>("RedisConnection")
             ));
             services.AddSingleton<IRedisCache, RedisCacheService>();
+
+            /*
+             * Elasticsearch
+             */
+            var settings = new ConnectionSettings(new Uri(Configuration.GetValue<string>("ElasticSearchConnection")));
+            services.AddSingleton<IElasticClient>(new ElasticClient(settings));
 
             /*
              * Swagger
