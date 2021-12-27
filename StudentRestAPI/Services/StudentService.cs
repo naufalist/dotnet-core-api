@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MongoDB.Bson;
+using MongoDB.Driver;
 using StudentRestAPI.Models;
 using StudentRestAPI.Redis;
 using System;
@@ -11,13 +13,15 @@ namespace StudentRestAPI.Services
     public class StudentService
     {
         private readonly AppDbContext _dbContext;
+        private readonly MongodbContext _mongodbContext;
         private readonly IRedisCache _redisCache;
         private readonly ProjectService _projectService;
         private readonly SupervisorService _supervisorService;
 
-        public StudentService(AppDbContext AppDbContext, ProjectService projectService, SupervisorService supervisorService, IRedisCache redisCache)
+        public StudentService(AppDbContext AppDbContext, MongodbContext mongodbContext, ProjectService projectService, SupervisorService supervisorService, IRedisCache redisCache)
         {
             _dbContext = AppDbContext;
+            _mongodbContext = mongodbContext;
             _projectService = projectService;
             _supervisorService = supervisorService;
             _redisCache = redisCache;
@@ -275,6 +279,55 @@ namespace StudentRestAPI.Services
             student.Projects.Remove(project);
             _dbContext.Student.Update(student);
             _dbContext.SaveChanges();            
+        }
+
+        public List<StudentOutput> MongoDbGetAll()
+        {
+            return _mongodbContext.Students.Find(student => true).ToList();
+        }
+
+        public async Task<StudentOutput> MongoDbGetById(int id)
+        {
+            return await _mongodbContext.Students.Find(student => student.Id == id).SingleOrDefaultAsync();
+        }
+
+        public bool MongoDbCreate(StudentOutput studentOutput)
+        {
+            try
+            {
+                _mongodbContext.Students.InsertOne(studentOutput);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public UpdateResult MongoDbUpdate(int id)
+        {
+            /*
+             * Partial update using "UpdateOne"
+             * params: int id
+             * return type: UpdateResult
+             */
+            var filter = Builders<StudentOutput>.Filter.Eq(s => s.Id, id);
+            var update = Builders<StudentOutput>.Update.Set(s => s.LastName, "Elizabeth");
+            //var options = new UpdateOptions { IsUpsert = true };
+            //return _mongodbContext.Students.UpdateOne(filter, update, options);
+            return _mongodbContext.Students.UpdateOne(filter, update);
+
+            /*
+             * Full Update
+             * params: int id, StudentOutput studentOutput
+             * return type: ReplaceOneResult
+             */
+            //return _mongodbContext.Students.ReplaceOne(student => student.Id == id, studentOutput);
+        }
+
+        public DeleteResult MongoDbDelete(int id)
+        {
+            return _mongodbContext.Students.DeleteOne(s => s.Id == id);
         }
     }
 }
