@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using MongoDB.Driver;
 using Nest;
 using StackExchange.Redis;
 using StudentRestAPI.Models;
@@ -69,6 +70,24 @@ namespace StudentRestAPI
              */
             var settings = new ConnectionSettings(new Uri(Configuration.GetValue<string>("ElasticSearchConnection")));
             services.AddSingleton<IElasticClient>(new ElasticClient(settings));
+
+            /*
+             * MongoDB
+             */
+            services.AddSingleton<IMongoClient>(sp =>
+            {
+                //var login = "";
+                //var password = Uri.EscapeDataString("");
+                //var server = "";
+                //return new MongoClient(string.Format("mongodb+srv://{0}:{1}@{2}/test?retryWrites=true&w=majority", login, password, server));
+
+                //return new MongoClient("mongodb://localhost:27017");
+
+                return new MongoClient(Configuration.GetConnectionString("MongoDb"));
+            });
+            services.AddScoped(sp =>
+                new MongodbContext(sp.GetRequiredService<IMongoClient>(), Configuration["MongoDbDatabaseName"])
+            );
 
             /*
              * Swagger
